@@ -51,7 +51,8 @@ to quickly create a Cobra application.`,
 		protocol, _ := cmd.Flags().GetString("protocol")
 		port, _ := cmd.Flags().GetInt("port")
 		id, _ := cmd.Flags().GetString("id")
-		zconf.RegisterService(name, protocol, id, port)
+		iface, _ := cmd.Flags().GetString("interface")
+		zconf.RegisterService(name, protocol, id, iface, port)
 	},
 }
 
@@ -62,6 +63,7 @@ func init() {
 	registerCmd.Flags().String("protocol", "_foobar._tcp", "")
 	registerCmd.Flags().String("id", "", "")
 	registerCmd.Flags().Int("port", 80, "")
+	registerCmd.Flags().String("interface", "", "")
 	registerCmd.MarkFlagRequired("name")
 
 	// Here you will define your flags and configuration settings.

@@ -2,20 +2,29 @@ package zconf
 
 import (
 	"log"
+	"net"
+
+	"crypto/md5"
+	"encoding/hex"
 
 	"github.com/grandcat/zeroconf"
 	"github.com/tsirysndr/mdns"
-	"crypto/md5"
-	"encoding/hex"
 
 	"github.com/lithammer/shortuuid"
 )
 
-func RegisterService(name, protocol, id string, port int) {
+func RegisterService(name, protocol, id, iface string, port int) {
 	if id == "" {
 		hasher := md5.New()
 		hasher.Write([]byte(shortuuid.New()))
-		id = hex.EncodeToString(hasher.Sum(nil)) 
+		id = hex.EncodeToString(hasher.Sum(nil))
+	}
+	var ifaces []net.Interface = nil
+	if iface != "" {
+		device, _ := net.InterfaceByName(iface)
+		if device != nil {
+			ifaces = []net.Interface{*device}
+		}
 	}
 	log.Println("id=" + id)
 	meta := []string{
@@ -31,7 +40,7 @@ func RegisterService(name, protocol, id string, port int) {
 		"local.",
 		port,
 		meta,
-		nil,
+		ifaces,
 	)
 	if err != nil {
 		log.Fatal(err)
